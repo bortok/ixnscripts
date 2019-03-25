@@ -45,22 +45,6 @@ if len(sys.argv) > 4:
     osPlatform = sys.argv[4]
 
 #Test Functions
-
-def stopProto():
-#from IxNetRestApiProtocol import Protocol
-# protocolObj.stopAllProtocols()
-    response = requests.post(url + '/ixnetwork/operations/stopallprotocols', data=json.dumps({}), headers={'content-type': 'application/json'}, verify=False)
-    time.sleep(5)
-    response.json()['state']
-    return 0
-
-def stopTraffic():
-#from IxNetRestApiTraffic import Traffic
-#    trafficObj.stopTraffic()
-    response = requests.post(url + '/ixnetwork/traffic/operations/stop', data=json.dumps({'arg1': '/ixnetwork/traffic'}), headers={'content-type': 'application/json'}, verify=False)
-    response.json()
-    return 0
-
  
 def getPackLossDuration():
     stats = statObj.getStats(viewName='Traffic Item Statistics')
@@ -73,12 +57,6 @@ def getPackLossDuration():
     else:
         value = 0.0
     return value
-
-def stopProtoAndTraffic():
-    print('Stopping traffic. Wait...')
-    stopTraffic()
-    stopProto()
-    print('stopped')
 
 # Parse arguments
 if len(sys.argv) < 4:
@@ -272,7 +250,10 @@ try:
             if user_input != "y":
         	    break
 
-    stopProtoAndTraffic()
+    print('Stopping traffic. Wait...')
+    trafficObj.stopTraffic()
+    protocolObj.stopAllProtocols()
+    print('stopped')
 
     if releasePortsWhenDone == True:
         portObj.releasePorts(portList)
