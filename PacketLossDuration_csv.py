@@ -33,6 +33,8 @@ api_session_id = sys.argv[2]
 api_tcp_port = sys.argv[3]
     
 url = 'http://' + api_host + ':' + api_tcp_port + '/api/v1/sessions/' + api_session_id
+data = {'applicationType': 'ixnrest'}
+jsonHeader = {'content-type': 'application/json'}
 
 # Default the API server to either windows, windowsConnectionMgr or linux.
 osPlatform = 'windows'
@@ -308,48 +310,14 @@ try:
         print('{txPort:10} {txFrames:15} {rxPort:10} {rxFrames:15} {frameLoss:10} '.format(
             txPort=txPort, txFrames=txFrames, rxPort=rxPort, rxFrames=rxFrames, frameLoss=frameLoss))
 
-    if releasePortsWhenDone == True:
-        portObj.releasePorts(portList)
 
-    if osPlatform == 'linux':
-        mainObj.linuxServerStopAndDeleteSession()
+    # Initialize counters
+    test_number = 0
+    test_scope = ""
+    test_iterrations_str = ""
+    test_iterrations = 1
+    test_iterration = 0
 
-    if osPlatform == 'windowsConnectionMgr':
-        mainObj.deleteSession()
-
-
-except (IxNetRestApiException, Exception, KeyboardInterrupt):
-    if enableDebugTracing:
-        if not bool(re.search('ConnectionError', traceback.format_exc())):
-            print('\n%s' % traceback.format_exc())
-
-    if 'mainObj' in locals() and osPlatform == 'linux':
-        if deleteSessionAfterTest:
-            mainObj.linuxServerStopAndDeleteSession()
-
-    if 'mainObj' in locals() and osPlatform in ['windows', 'windowsConnectionMgr']:
-        if releasePortsWhenDone and forceTakePortOwnership:
-            portObj.releasePorts(portList)
-
-        if osPlatform == 'windowsConnectionMgr':
-            if deleteSessionAfterTest:
-                mainObj.deleteSession()
-
-
-
-data = {'applicationType': 'ixnrest'}
-jsonHeader = {'content-type': 'application/json'}
-
-# Initialize counters
-test_number = 0
-test_scope = ""
-test_iterrations_str = ""
-test_iterrations = 1
-test_iterration = 0
-
-user_input = input("Start traffic? (Anything other than 'y' will kill it) ")
-if user_input == "y":
-    startProtoAndTraffic()
     today = datetime.datetime.today()
     csv_filename = today.strftime('packet_loss_tests_%Y_%m%d_%H%M.csv')
     with open(csv_filename, 'w', newline='') as csvfile:
@@ -385,5 +353,33 @@ if user_input == "y":
 
     stopProtoAndTraffic()
 
-print('Exiting...')
+    if releasePortsWhenDone == True:
+        portObj.releasePorts(portList)
+
+    if osPlatform == 'linux':
+        mainObj.linuxServerStopAndDeleteSession()
+
+    if osPlatform == 'windowsConnectionMgr':
+        mainObj.deleteSession()
+
+    print('Exiting...')
+
+except (IxNetRestApiException, Exception, KeyboardInterrupt):
+    if enableDebugTracing:
+        if not bool(re.search('ConnectionError', traceback.format_exc())):
+            print('\n%s' % traceback.format_exc())
+
+    if 'mainObj' in locals() and osPlatform == 'linux':
+        if deleteSessionAfterTest:
+            mainObj.linuxServerStopAndDeleteSession()
+
+    if 'mainObj' in locals() and osPlatform in ['windows', 'windowsConnectionMgr']:
+        if releasePortsWhenDone and forceTakePortOwnership:
+            portObj.releasePorts(portList)
+
+        if osPlatform == 'windowsConnectionMgr':
+            if deleteSessionAfterTest:
+                mainObj.deleteSession()
+
+
 
