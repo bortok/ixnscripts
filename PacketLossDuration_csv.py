@@ -67,9 +67,9 @@ if len(sys.argv) < 4:
 try:
     #---------- Preference Settings --------------
     forceTakePortOwnership = True
-    releasePortsWhenDone = False
-    enableDebugTracing = True
-    deleteSessionAfterTest = False ;# For Windows Connection Mgr and Linux API server only
+    releasePortsWhenDone = True
+    enableDebugTracing = False
+    deleteSessionAfterTest = True ;# For Windows Connection Mgr and Linux API server only
 
     licenseServerIp = '10.36.237.207'
     licenseModel = 'perpetual'
