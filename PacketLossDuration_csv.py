@@ -48,15 +48,15 @@ try:
     enableDebugTracing = True
     deleteSessionAfterTest = False ;# For Windows Connection Mgr and Linux API server only
 
-    licenseServerIp = '10.36.237.207'
-    licenseModel = 'perpetual'
+#    licenseServerIp = '10.36.237.207'
+#    licenseModel = 'perpetual'
 
-    ixChassisIp = '10.36.237.207'
+    ixChassisIp = api_host
     # [chassisIp, cardNumber, slotNumber]
     portList = [[ixChassisIp, '2', '9'], [ixChassisIp, '2', '10']]
 
     if osPlatform == 'linux':
-        mainObj = Connect(apiServerIp='10.36.237.207',
+        mainObj = Connect(apiServerIp=api_host,
                           serverIpPort='443',
                           username='admin',
                           password='admin',
@@ -67,7 +67,7 @@ try:
                           )
 
     if osPlatform in ['windows', 'windowsConnectionMgr']:
-        mainObj = Connect(apiServerIp='10.211.55.3',
+        mainObj = Connect(apiServerIp=api_host,
                           serverIpPort='11009',
                           serverOs=osPlatform,
                           deleteSessionAfterTest=True,
