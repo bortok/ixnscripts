@@ -259,8 +259,7 @@ try:
                                                                 'sources': [topologyObj1],
                                                                 'destinations': [topologyObj2]
                                                            }],
-                                                 configElements = [{'transmissionType': 'fixedFrameCount',
-                                                                    'frameCount': 50000,
+                                                 configElements = [{'transmissionType': 'continuous',
                                                                     'frameRate': 10,
                                                                     'frameRateType': 'percentLineRate',
                                                                     'frameSize': 128}])
@@ -289,8 +288,8 @@ try:
     #    Use one of the below APIs based on what you expect the traffic state should be before calling stats.
     #    If you expect traffic to be stopped such as in fixedFrameCount and fixedDuration
     #    or do you expect traffic to be started such as in continuous mode
-    trafficObj.checkTrafficState(expectedState=['stopped'], timeout=45)
-    #trafficObj.checkTrafficState(expectedState=['started], timeout=45)
+    #trafficObj.checkTrafficState(expectedState=['stopped'], timeout=45)
+    trafficObj.checkTrafficState(expectedState=['started'], timeout=45)
 
     statObj = Statistics(mainObj)
     stats = statObj.getStats(viewName='Flow Statistics')
