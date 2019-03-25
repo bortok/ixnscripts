@@ -28,38 +28,56 @@ def isFloat(s):
 #Test Functions
 
 def startProto():
-    response = requests.post(url + '/ixnetwork/operations/startallprotocols', data=json.dumps({}), headers={'content-type': 'application/json'})
+#from IxNetRestApiProtocol import Protocol
+#    protocolObj = Protocol(mainObj)
+#    protocolObj.startAllProtocols()
+#    protocolObj.verifyArp(ipType='ipv4')
+#    protocolObj.verifyProtocolSessionsUp(protocolViewName='BGP Peer Per Port', timeout=120)
+
+    response = requests.post(url + '/ixnetwork/operations/startallprotocols', data=json.dumps({}), headers={'content-type': 'application/json'}, verify=False)
     time.sleep(5)
     response.json()['state']
     return 0
 
 def stopProto():
-    response = requests.post(url + '/ixnetwork/operations/stopallprotocols', data=json.dumps({}), headers={'content-type': 'application/json'})
+#from IxNetRestApiProtocol import Protocol
+# protocolObj.stopAllProtocols()
+    response = requests.post(url + '/ixnetwork/operations/stopallprotocols', data=json.dumps({}), headers={'content-type': 'application/json'}, verify=False)
     time.sleep(5)
     response.json()['state']
     return 0
 
 def startTraffic():
-    requests.post(url + '/ixnetwork/traffic/operations/generate', data=json.dumps({'arg1': url + '/ixnetwork/traffic/1'}), headers={'content-type': 'application/json'})
-    response = requests.post(url + '/ixnetwork/traffic/operations/apply', data=json.dumps({'arg1': '/ixnetwork/traffic'}), headers={'content-type': 'application/json'})
-    response = requests.post(url + '/ixnetwork/traffic/operations/start', data=json.dumps({'arg1': '/ixnetwork/traffic'}), headers={'content-type': 'application/json'})
+#from IxNetRestApiTraffic import Traffic
+#    trafficObj = Traffic(mainObj)
+#    trafficObj.startTraffic(regenerateTraffic=True, applyTraffic=True)
+    
+    requests.post(url + '/ixnetwork/traffic/operations/generate', data=json.dumps({'arg1': url + '/ixnetwork/traffic/1'}), headers={'content-type': 'application/json'}, verify=False)
+    response = requests.post(url + '/ixnetwork/traffic/operations/apply', data=json.dumps({'arg1': '/ixnetwork/traffic'}), headers={'content-type': 'application/json'}, verify=False)
+    response = requests.post(url + '/ixnetwork/traffic/operations/start', data=json.dumps({'arg1': '/ixnetwork/traffic'}), headers={'content-type': 'application/json'}, verify=False)
     response.json()
     return 0
 
 def stopTraffic():
-    response = requests.post(url + '/ixnetwork/traffic/operations/stop', data=json.dumps({'arg1': '/ixnetwork/traffic'}), headers={'content-type': 'application/json'})
+#from IxNetRestApiTraffic import Traffic
+#    trafficObj.stopTraffic()
+    response = requests.post(url + '/ixnetwork/traffic/operations/stop', data=json.dumps({'arg1': '/ixnetwork/traffic'}), headers={'content-type': 'application/json'}, verify=False)
     response.json()
     return 0
 
  
 def clearStats():
-    response = requests.post(url + '/ixnetwork/operations/clearstats', headers=jsonHeader)
+#from IxNetRestApiStatistics import Statistics
+#    statObj = Statistics(mainObj)
+#    stats = statObj.clearStats()
+    response = requests.post(url + '/ixnetwork/operations/clearstats', headers=jsonHeader, verify=False)
     if response.status_code != 202:
         print('something went wrong')
 
 def getStats(statName):
+#    stats = statObj.getStats(viewName='Flow Statistics')    
     #Parse Through list of returned views and then pick the one that matches the caption to be used
-    response = requests.get(url + '/ixnetwork/statistics/view', headers=jsonHeader)
+    response = requests.get(url + '/ixnetwork/statistics/view', headers=jsonHeader, verify=False)
     for i in response.json():
         if (i['caption']) == 'Traffic Item Statistics':
             viewNum = i['id']
@@ -67,7 +85,7 @@ def getStats(statName):
         print("Error getting response from the API server")
         sys.exit()
     view = ('%s%s%s%s' % (url, '/ixnetwork/statistics/view/', viewNum, '/page'))
-    response = requests.get(view, headers=jsonHeader)
+    response = requests.get(view, headers=jsonHeader, verify=False)
     return response
 
 def getPackLossDuration():
@@ -125,6 +143,7 @@ test_iterration = 0
 
 user_input = input("Start traffic? (Anything other than 'y' will kill it) ")
 if user_input == "y":
+    requests.packages.urllib3.disable_warnings()
     startProtoAndTraffic()
     today = datetime.datetime.today()
     csv_filename = today.strftime('packet_loss_tests_%Y_%m%d_%H%M.csv')
