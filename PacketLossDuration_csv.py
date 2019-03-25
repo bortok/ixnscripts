@@ -28,7 +28,6 @@ if len(sys.argv) < 4:
 api_host = sys.argv[1]
 api_session_id = sys.argv[2]
 api_tcp_port = sys.argv[3]
-api_tcp_port = '11009'
     
 url = 'http://' + api_host + ':' + api_tcp_port + '/api/v1/sessions/' + api_session_id
 
@@ -57,7 +56,7 @@ try:
 
     if osPlatform == 'linux':
         mainObj = Connect(apiServerIp=api_host,
-                          serverIpPort='443',
+                          serverIpPort=api_tcp_port,
                           username='admin',
                           password='admin',
                           deleteSessionAfterTest=deleteSessionAfterTest,
@@ -68,7 +67,7 @@ try:
 
     if osPlatform in ['windows', 'windowsConnectionMgr']:
         mainObj = Connect(apiServerIp=api_host,
-                          serverIpPort='11009',
+                          serverIpPort=api_tcp_port,
                           serverOs=osPlatform,
                           deleteSessionAfterTest=True,
                           generateLogFile='ixiaDebug.log'
