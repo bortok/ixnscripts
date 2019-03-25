@@ -1,5 +1,78 @@
 #Python Test to get Packet Loss Duration Statistics
 # CLI arguments parsing
+
+# USAGE
+#    python <script>.py windows
+#    python <script>.py linux
+
+import sys, os, traceback
+
+sys.path.insert(0, (os.path.dirname(os.path.abspath(__file__).replace('ixnscripts', 'IxNetwork/RestApi/Python/Modules'))))
+from IxNetRestApi import *
+from IxNetRestApiPortMgmt import PortMgmt
+from IxNetRestApiTraffic import Traffic
+from IxNetRestApiProtocol import Protocol
+from IxNetRestApiStatistics import Statistics
+
+# Default the API server to either windows, windowsConnectionMgr or linux.
+osPlatform = 'windows'
+
+if len(sys.argv) > 1:
+    if sys.argv[1] not in ['windows', 'windowsConnectionMgr', 'linux']:
+        sys.exit("\nError: %s is not a known option. Choices are 'windows', 'windowsConnectionMgr or 'linux'." % sys.argv[1])
+    osPlatform = sys.argv[1]
+
+try:
+    #---------- Preference Settings --------------
+    forceTakePortOwnership = True
+    releasePortsWhenDone = False
+    enableDebugTracing = True
+    deleteSessionAfterTest = False ;# For Windows Connection Mgr and Linux API server only
+
+    licenseServerIp = '10.36.237.207'
+    licenseModel = 'perpetual'
+
+    ixChassisIp = '10.36.237.207'
+    # [chassisIp, cardNumber, slotNumber]
+    portList = [[ixChassisIp, '2', '9'], [ixChassisIp, '2', '10']]
+
+    if osPlatform == 'linux':
+        mainObj = Connect(apiServerIp='10.36.237.207',
+                          serverIpPort='443',
+                          username='admin',
+                          password='admin',
+                          deleteSessionAfterTest=deleteSessionAfterTest,
+                          verifySslCert=False,
+                          serverOs=osPlatform,
+                          generateLogFile='ixiaDebug.log'
+                          )
+
+    if osPlatform in ['windows', 'windowsConnectionMgr']:
+        mainObj = Connect(apiServerIp='10.211.55.3',
+                          serverIpPort='11009',
+                          serverOs=osPlatform,
+                          deleteSessionAfterTest=True,
+                          generateLogFile='ixiaDebug.log'
+                          )
+        
+    #---------- Preference Settings End --------------
+except (IxNetRestApiException, Exception, KeyboardInterrupt):
+    if enableDebugTracing:
+        if not bool(re.search('ConnectionError', traceback.format_exc())):
+            print('\n%s' % traceback.format_exc())
+
+    if 'mainObj' in locals() and osPlatform == 'linux':
+        if deleteSessionAfterTest:
+            mainObj.linuxServerStopAndDeleteSession()
+
+    if 'mainObj' in locals() and osPlatform in ['windows', 'windowsConnectionMgr']:
+        if releasePortsWhenDone and forceTakePortOwnership:
+            portObj.releasePorts(portList)
+
+        if osPlatform == 'windowsConnectionMgr':
+            if deleteSessionAfterTest:
+                mainObj.deleteSession()
+
 import sys
 
 import requests 
