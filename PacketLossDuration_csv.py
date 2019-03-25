@@ -62,18 +62,10 @@ def stopTraffic():
     return 0
 
  
-def clearStats():
-#from IxNetRestApiStatistics import Statistics
-#    statObj = Statistics(mainObj)
-#    stats = statObj.clearStats()
-    response = requests.post(url + '/ixnetwork/operations/clearstats', headers=jsonHeader, verify=False)
-    if response.status_code != 202:
-        print('something went wrong')
-
 def getPackLossDuration():
-    stats = statObj.getStats(viewName='Traffic Item Statistics')    
+    stats = statObj.getStats(viewName='Traffic Item Statistics')
     # DEBUG
-    print("DEBUG STATS JSON\n%s" % (stats))
+    #print("DEBUG STATS JSON\n%s" % (stats))
     value_str = stats[1]["Packet Loss Duration (ms)"]
     print("Packet loss duration: %s ms" % (value_str))
     if isFloat(value_str):
@@ -216,7 +208,7 @@ try:
                                                                 'destinations': [topologyObj2]
                                                            }],
                                                  configElements = [{'transmissionType': 'continuous',
-                                                                    'frameRate': 10,
+                                                                    'frameRate': 0.25,
                                                                     'frameRateType': 'percentLineRate',
                                                                     'frameSize': 512}])
     
@@ -269,10 +261,10 @@ try:
             print("Test number %d: %s" % (test_number, test_scope))
             while test_iterration < test_iterrations:
                 test_iterration = test_iterration + 1
-                clearStats()
+                statObj.clearStats()
                 input("Starting the iteration #%d for FAILURE... press Enter when convergence is expected to be complete..." % (test_iterration))
                 loss_duration_failure = getPackLossDuration()
-                clearStats()
+                statObj.clearStats()
                 input("Starting the iteration #%d for RECOVERY... press Enter when convergence is expected to be complete..." % (test_iterration))
                 loss_duration_recovery = getPackLossDuration()
                 testwriter.writerow([test_number, test_scope, test_iterration, loss_duration_failure, loss_duration_recovery])
