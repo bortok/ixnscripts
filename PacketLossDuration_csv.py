@@ -243,6 +243,82 @@ try:
     protocolObj.startAllProtocols()
     protocolObj.verifyProtocolSessionsUp()
 
+    # For all parameter options, please go to the API configTrafficItem
+    # mode = create or modify
+    trafficObj = Traffic(mainObj)
+    trafficStatus = trafficObj.configTrafficItem(mode='create',
+                                                 trafficItem = {
+                                                     'name':'Topo1 to Topo2',
+                                                     'trafficType':'ipv4',
+                                                     'biDirectional':True,
+                                                     'srcDestMesh':'one-to-one',
+                                                     'routeMesh':'oneToOne',
+                                                     'allowSelfDestined':False,
+                                                     'trackBy': ['flowGroup0', 'vlanVlanId0']},
+                                                 endpoints = [{'name':'Flow-Group-1',
+                                                                'sources': [topologyObj1],
+                                                                'destinations': [topologyObj2]
+                                                           }],
+                                                 configElements = [{'transmissionType': 'fixedFrameCount',
+                                                                    'frameCount': 50000,
+                                                                    'frameRate': 10,
+                                                                    'frameRateType': 'percentLineRate',
+                                                                    'frameSize': 128}])
+    
+    trafficItemObj   = trafficStatus[0]
+    endpointObj      = trafficStatus[1][0]
+    configElementObj = trafficStatus[2][0]
+
+    # Example on how to modify Traffic Item
+    trafficObj.configTrafficItem(mode='modify',
+                                 obj=trafficItemObj,
+                                 trafficItem = {'name':'Topo1_mod_Topo2'})
+    
+    trafficObj.configTrafficItem(mode='modify',
+                                 obj=configElementObj,
+                                 configElements = {'frameSize':'512'})
+    
+    trafficObj.configTrafficItem(mode='modify',
+                                 obj=endpointObj,
+                                 endpoints = {'name':'Flow-Group-10'})
+    
+    trafficObj.startTraffic(regenerateTraffic=True, applyTraffic=True)
+
+
+    # Check the traffic state before getting stats.
+    #    Use one of the below APIs based on what you expect the traffic state should be before calling stats.
+    #    If you expect traffic to be stopped such as in fixedFrameCount and fixedDuration
+    #    or do you expect traffic to be started such as in continuous mode
+    trafficObj.checkTrafficState(expectedState=['stopped'], timeout=45)
+    #trafficObj.checkTrafficState(expectedState=['started], timeout=45)
+
+    statObj = Statistics(mainObj)
+    stats = statObj.getStats(viewName='Flow Statistics')
+
+    print('\n{txPort:10} {txFrames:15} {rxPort:10} {rxFrames:15} {frameLoss:10}'.format(
+        txPort='txPort', txFrames='txFrames', rxPort='rxPort', rxFrames='rxFrames', frameLoss='frameLoss'))
+    print('-'*90)
+
+    for flowGroup,values in stats.items():
+        txPort = values['Tx Port']
+        rxPort = values['Rx Port']
+        txFrames = values['Tx Frames']
+        rxFrames = values['Rx Frames']
+        frameLoss = values['Frames Delta']
+
+        print('{txPort:10} {txFrames:15} {rxPort:10} {rxFrames:15} {frameLoss:10} '.format(
+            txPort=txPort, txFrames=txFrames, rxPort=rxPort, rxFrames=rxFrames, frameLoss=frameLoss))
+
+    if releasePortsWhenDone == True:
+        portObj.releasePorts(portList)
+
+    if osPlatform == 'linux':
+        mainObj.linuxServerStopAndDeleteSession()
+
+    if osPlatform == 'windowsConnectionMgr':
+        mainObj.deleteSession()
+
+
 except (IxNetRestApiException, Exception, KeyboardInterrupt):
     if enableDebugTracing:
         if not bool(re.search('ConnectionError', traceback.format_exc())):
