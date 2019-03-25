@@ -19,13 +19,27 @@ from IxNetRestApiTraffic import Traffic
 from IxNetRestApiProtocol import Protocol
 from IxNetRestApiStatistics import Statistics
 
+# Parse arguments
+if len(sys.argv) < 4:
+    print("Usage: %s api_host api_session_id api_tcp_port [api_platform]" % (sys.argv[0]))
+    sys.exit()
+    
+# Assemble an API URL base
+api_host = sys.argv[1]
+api_session_id = sys.argv[2]
+api_tcp_port = sys.argv[3]
+api_tcp_port = '11009'
+    
+url = 'http://' + api_host + ':' + api_tcp_port + '/api/v1/sessions/' + api_session_id
+
 # Default the API server to either windows, windowsConnectionMgr or linux.
 osPlatform = 'windows'
 
-if len(sys.argv) > 1:
-    if sys.argv[1] not in ['windows', 'windowsConnectionMgr', 'linux']:
-        sys.exit("\nError: %s is not a known option. Choices are 'windows', 'windowsConnectionMgr or 'linux'." % sys.argv[1])
-    osPlatform = sys.argv[1]
+if len(sys.argv) > 4:
+    if sys.argv[4] not in ['windows', 'windowsConnectionMgr', 'linux']:
+        sys.exit("\nError: %s is not a known option. Choices are 'windows', 'windowsConnectionMgr or 'linux'." % sys.argv[4])
+    osPlatform = sys.argv[4]
+
 
 try:
     #---------- Preference Settings --------------
@@ -79,20 +93,6 @@ except (IxNetRestApiException, Exception, KeyboardInterrupt):
                 mainObj.deleteSession()
 
 
-# Parse arguments
-if len(sys.argv) < 3:
-    print("Usage: %s api_host api_session_id [api_tcp_port]" % (sys.argv[0]))
-    sys.exit()
-    
-# Assemble an API URL base
-api_host = sys.argv[1]
-api_session_id = sys.argv[2]
-if len(sys.argv) > 3:
-    api_tcp_port = sys.argv[3]
-else:
-    api_tcp_port = '11009'
-    
-url = 'http://' + api_host + ':' + api_tcp_port + '/api/v1/sessions/' + api_session_id
 
 data = {'applicationType': 'ixnrest'}
 jsonHeader = {'content-type': 'application/json'}
