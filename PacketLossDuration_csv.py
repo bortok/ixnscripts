@@ -69,14 +69,15 @@ try:
     forceTakePortOwnership = True
     releasePortsWhenDone = True
     enableDebugTracing = False
+    logFile = False
     deleteSessionAfterTest = True ;# For Windows Connection Mgr and Linux API server only
 
-    licenseServerIp = '10.36.237.207'
+    licenseServerIp = '10.36.237.142'
     licenseModel = 'perpetual'
 
-    ixChassisIp = '10.36.237.207'
+    ixChassisIp = '10.36.237.142'
     # [chassisIp, cardNumber, slotNumber]
-    portList = [[ixChassisIp, '2', '9'], [ixChassisIp, '2', '10']]
+    portList = [[ixChassisIp, '1', '1'], [ixChassisIp, '1', '2']]
 
     if osPlatform == 'linux':
         mainObj = Connect(apiServerIp=api_host,
@@ -86,7 +87,7 @@ try:
                           deleteSessionAfterTest=deleteSessionAfterTest,
                           verifySslCert=False,
                           serverOs=osPlatform,
-                          generateLogFile='ixiaDebug.log'
+                          generateLogFile=logFile
                           )
 
     if osPlatform in ['windows', 'windowsConnectionMgr']:
@@ -94,7 +95,7 @@ try:
                           serverIpPort=api_tcp_port,
                           serverOs=osPlatform,
                           deleteSessionAfterTest=True,
-                          generateLogFile='ixiaDebug.log'
+                          generateLogFile=logFile
                           )
         
     #---------- Preference Settings End --------------
@@ -186,7 +187,7 @@ try:
                                                                 'destinations': [topologyObj2]
                                                            }],
                                                  configElements = [{'transmissionType': 'continuous',
-                                                                    'frameRate': 0.25,
+                                                                    'frameRate': 2.5,
                                                                     'frameRateType': 'percentLineRate',
                                                                     'frameSize': 512}])
     
