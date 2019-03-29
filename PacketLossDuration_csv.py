@@ -108,6 +108,7 @@ try:
 
     portObj = PortMgmt(mainObj)
     portObj.assignPorts(portList, forceTakePortOwnership)
+    portObj.modifyPortMediaType(portList, 'fiber')
 
     protocolObj = Protocol(mainObj)
     topologyObj1 = protocolObj.createTopologyNgpf(portList=[portList[0]],
