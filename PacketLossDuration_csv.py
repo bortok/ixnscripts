@@ -2,8 +2,30 @@
 # CLI arguments parsing
 
 # USAGE
-#    python <script>.py windows
-#    python <script>.py linux
+# 1. Update "Preference Settings" section below
+# 2. Launch with desired traffic generation parameters
+#    python <script>.py <frame rate percentage of line rate> <frame size> [api session id]
+
+#---------- Preference Settings --------------
+forceTakePortOwnership = True
+releasePortsWhenDone = True
+enableDebugTracing = False
+logFile = False
+deleteSessionAfterTest = True ;# For Windows Connection Mgr and Linux API server only
+
+apiServerIp = '10.36.237.142'
+apiServerTcpPort = '443'    # Use 443 for linux or 11009 for windows API server
+apiServerUsername = 'admin' # Only used for linux API server
+apiServerPassword = 'admin' # Only used for linux API server
+osPlatform = 'linux'        # linux or windows
+licenseServerIp = apiServerIp
+licenseModel = 'perpetual'
+
+ixChassisIp = apiServerIp
+# [chassisIp, cardNumber, slotNumber]
+portList = [[ixChassisIp, '1', '1'], [ixChassisIp, '1', '2']]
+
+#---------- Preference Settings End --------------
 
 import sys, os, traceback
 import json
@@ -23,26 +45,18 @@ from IxNetRestApiProtocol import Protocol
 from IxNetRestApiStatistics import Statistics
 
 # Parse arguments
-if len(sys.argv) < 4:
-    print("Usage: %s api_host api_session_id api_tcp_port [api_platform]" % (sys.argv[0]))
+if len(sys.argv) < 3:
+    print("Usage: %s frame_rate_percent frame_size [api_session_id]" % (sys.argv[0]))
     sys.exit()
     
 # Assemble an API URL base
-api_host = sys.argv[1]
-api_session_id = sys.argv[2]
-api_tcp_port = sys.argv[3]
+frame_rate_percent = float(sys.argv[1])
+frame_size  = int(sys.argv[2])
     
-url = 'http://' + api_host + ':' + api_tcp_port + '/api/v1/sessions/' + api_session_id
-data = {'applicationType': 'ixnrest'}
-jsonHeader = {'content-type': 'application/json'}
-
-# Default the API server to either windows, windowsConnectionMgr or linux.
-osPlatform = 'windows'
-
-if len(sys.argv) > 4:
-    if sys.argv[4] not in ['windows', 'windowsConnectionMgr', 'linux']:
-        sys.exit("\nError: %s is not a known option. Choices are 'windows', 'windowsConnectionMgr or 'linux'." % sys.argv[4])
-    osPlatform = sys.argv[4]
+if len(sys.argv) > 3:
+    api_session_id = sys.argv[3]
+else:
+    api_session_id = 0 # will create a new session
 
 #Test Functions
  
@@ -58,32 +72,12 @@ def getPackLossDuration():
         value = 0.0
     return value
 
-# Parse arguments
-if len(sys.argv) < 4:
-    print("Usage: %s api_host api_session_id api_tcp_port [api_platform]" % (sys.argv[0]))
-    sys.exit()
-
-
 try:
-    #---------- Preference Settings --------------
-    forceTakePortOwnership = True
-    releasePortsWhenDone = True
-    enableDebugTracing = False
-    logFile = False
-    deleteSessionAfterTest = True ;# For Windows Connection Mgr and Linux API server only
-
-    licenseServerIp = '10.36.237.142'
-    licenseModel = 'perpetual'
-
-    ixChassisIp = '10.36.237.142'
-    # [chassisIp, cardNumber, slotNumber]
-    portList = [[ixChassisIp, '1', '1'], [ixChassisIp, '1', '2']]
-
     if osPlatform == 'linux':
-        mainObj = Connect(apiServerIp=api_host,
-                          serverIpPort=api_tcp_port,
-                          username='admin',
-                          password='admin',
+        mainObj = Connect(apiServerIp=apiServerIp,
+                          serverIpPort=apiServerTcpPort,
+                          username=apiServerUsername,
+                          password=apiServerPassword,
                           deleteSessionAfterTest=deleteSessionAfterTest,
                           verifySslCert=False,
                           serverOs=osPlatform,
@@ -91,14 +85,13 @@ try:
                           )
 
     if osPlatform in ['windows', 'windowsConnectionMgr']:
-        mainObj = Connect(apiServerIp=api_host,
-                          serverIpPort=api_tcp_port,
+        mainObj = Connect(apiServerIp=apiServerIp,
+                          serverIpPort=apiServerTcpPort,
                           serverOs=osPlatform,
                           deleteSessionAfterTest=True,
                           generateLogFile=logFile
                           )
         
-    #---------- Preference Settings End --------------
     # Only need to blank the config for Windows because osPlatforms such as Linux and
     # Windows Connection Mgr supports multiple sessions and a new session always come up as a blank config.
     if osPlatform == 'windows':
@@ -188,9 +181,9 @@ try:
                                                                 'destinations': [topologyObj2]
                                                            }],
                                                  configElements = [{'transmissionType': 'continuous',
-                                                                    'frameRate': 2.5,
+                                                                    'frameRate': frame_rate_percent,
                                                                     'frameRateType': 'percentLineRate',
-                                                                    'frameSize': 512}])
+                                                                    'frameSize': frame_size}])
     
     trafficItemObj   = trafficStatus[0]
     endpointObj      = trafficStatus[1][0]
