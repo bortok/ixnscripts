@@ -13,17 +13,20 @@ enableDebugTracing = False
 logFile = False
 deleteSessionAfterTest = True ;# For Windows Connection Mgr and Linux API server only
 
-apiServerIp = '10.36.237.142'
-apiServerTcpPort = '443'    # Use 443 for linux or 11009 for windows API server
+#apiServerIp = '10.36.237.142'
+apiServerIp = '10.211.55.3'
+#apiServerTcpPort = '443'    # Use 443 for linux or 11009 for windows API server
+apiServerTcpPort = '11009'    # Use 443 for linux or 11009 for windows API server
 apiServerUsername = 'admin' # Only used for linux API server
 apiServerPassword = 'admin' # Only used for linux API server
-osPlatform = 'linux'        # linux or windows
+osPlatform = 'windows'        # linux or windows
 licenseServerIp = apiServerIp
 licenseModel = 'perpetual'
 
-ixChassisIp = apiServerIp
+ixChassisIp = '10.36.237.142'
 # [chassisIp, cardNumber, slotNumber]
 portList = [[ixChassisIp, '1', '1'], [ixChassisIp, '1', '2']]
+portMediaType = 'fiber' # copper, fiber or SGMII
 
 #---------- Preference Settings End --------------
 
@@ -101,7 +104,7 @@ try:
 
     portObj = PortMgmt(mainObj)
     portObj.assignPorts(portList, forceTakePortOwnership)
-    portObj.modifyPortMediaType(portList, 'fiber')
+    portObj.modifyPortMediaType(portList, portMediaType)
 
     protocolObj = Protocol(mainObj)
     topologyObj1 = protocolObj.createTopologyNgpf(portList=[portList[0]],
