@@ -4,22 +4,21 @@
 # USAGE
 # 1. Update "Preference Settings" section below
 # 2. Launch with desired traffic generation parameters
-#    python <script>.py <frame rate percentage of line rate> <frame size> [api session id]
+#    python <script>.py <frame rate percentage of line rate> <frame size> [api_session_id api_session_key]
 
 #---------- Preference Settings --------------
 forceTakePortOwnership = True
-releasePortsWhenDone = True
+releasePortsWhenDone = False
 enableDebugTracing = False
 logFile = False
-deleteSessionAfterTest = True ;# For Windows Connection Mgr and Linux API server only
 
-#apiServerIp = '10.36.237.142'
-apiServerIp = '10.211.55.3'
-#apiServerTcpPort = '443'    # Use 443 for linux or 11009 for windows API server
-apiServerTcpPort = '11009'    # Use 443 for linux or 11009 for windows API server
+apiServerIp = '10.36.237.142'
+#apiServerIp = '10.211.55.3'
+apiServerTcpPort = '443'    # Use 443 for linux or 11009 for windows API server
+#apiServerTcpPort = '11009'    # Use 443 for linux or 11009 for windows API server
 apiServerUsername = 'admin' # Only used for linux API server
 apiServerPassword = 'admin' # Only used for linux API server
-osPlatform = 'windows'        # linux or windows
+osPlatform = 'linux'        # linux or windows
 licenseServerIp = apiServerIp
 licenseModel = 'perpetual'
 
@@ -47,19 +46,39 @@ from IxNetRestApiTraffic import Traffic
 from IxNetRestApiProtocol import Protocol
 from IxNetRestApiStatistics import Statistics
 
+def usage():
+    print("Usage: %s frame_rate_percent frame_size [api_session_id api_session_key]" % (sys.argv[0]))
+
 # Parse arguments
 if len(sys.argv) < 3:
-    print("Usage: %s frame_rate_percent frame_size [api_session_id]" % (sys.argv[0]))
+    usage()
     sys.exit()
     
 # Assemble an API URL base
 frame_rate_percent = float(sys.argv[1])
 frame_size  = int(sys.argv[2])
+
+if osPlatform == 'windows':
+    deleteSessionAfterTest = False
+else: 
+    deleteSessionAfterTest = True   # see below for 'keep' parameter to override this
     
 if len(sys.argv) > 3:
-    api_session_id = sys.argv[3]
+    if sys.argv[3] == 'keep':   # the request is to create a new session and to keep it after the test is finished
+        api_session_id = None # will create a new session
+        api_session_key = None
+    else:
+        api_session_id = sys.argv[3]
+        if len(sys.argv) != 5:
+            print("Error: api_session_key is required if api_sesson_id is specified")
+            usage()
+            sys.exit()
+        else:
+            api_session_key = sys.argv[4]
+    deleteSessionAfterTest = False
 else:
-    api_session_id = 0 # will create a new session
+    api_session_id = None # will create a new session
+    api_session_key = None
 
 #Test Functions
  
@@ -84,6 +103,8 @@ try:
                           deleteSessionAfterTest=deleteSessionAfterTest,
                           verifySslCert=False,
                           serverOs=osPlatform,
+                          sessionId = api_session_id,
+                          apiKey = api_session_key,
                           generateLogFile=logFile
                           )
 
@@ -98,7 +119,11 @@ try:
     # Only need to blank the config for Windows because osPlatforms such as Linux and
     # Windows Connection Mgr supports multiple sessions and a new session always come up as a blank config.
     if osPlatform == 'windows':
-        mainObj.newBlankConfig() 
+        mainObj.newBlankConfig()
+    else:
+        if api_session_id != None:
+            mainObj.newBlankConfig() # Existing session, clear config
+
 
     mainObj.configLicenseServerDetails([licenseServerIp], licenseModel)
 
