@@ -136,14 +136,14 @@ try:
                                               topologyName='Topo1')
 
     deviceGroupObj1 = protocolObj.createDeviceGroupNgpf(topologyObj1,
-                                                    multiplier=1,
+                                                    multiplier=100,
                                                     deviceGroupName='DG1')
 
     topologyObj2 = protocolObj.createTopologyNgpf(portList=[portList[1]],
                                               topologyName='Topo2')
 
     deviceGroupObj2 = protocolObj.createDeviceGroupNgpf(topologyObj2,
-                                                    multiplier=1,
+                                                    multiplier=100,
                                                     deviceGroupName='DG2')
 
     ethernetObj1 = protocolObj.configEthernetNgpf(deviceGroupObj1,
@@ -168,26 +168,26 @@ try:
     ipv4Obj1 = protocolObj.configIpv4Ngpf(ethernetObj1,
                                           ipv4Address={'start': '1.1.1.1',
                                                        'direction': 'increment',
-                                                       'step': '0.0.0.1'},
+                                                       'step': '0.0.1.0'},
+                                          prefix=8,
                                           ipv4AddressPortStep='disabled',
-                                          gateway={'start': '1.1.1.2',
+                                          gateway={'start': '1.0.0.1',
                                                    'direction': 'increment',
                                                    'step': '0.0.0.0'},
                                           gatewayPortStep='disabled',
-                                          prefix=24,
-                                          resolveGateway=True)
+                                          resolveGateway=False)
 
     ipv4Obj2 = protocolObj.configIpv4Ngpf(ethernetObj2,
-                                          ipv4Address={'start': '1.1.1.2',
+                                          ipv4Address={'start': '1.1.2.1',
                                                        'direction': 'increment',
-                                                       'step': '0.0.0.1'},
+                                                       'step': '0.0.1.0'},
+                                          prefix=8,
                                           ipv4AddressPortStep='disabled',
-                                          gateway={'start': '1.1.1.1',
+                                          gateway={'start': '1.0.0.1',
                                                    'direction': 'increment',
                                                    'step': '0.0.0.0'},
                                           gatewayPortStep='disabled',
-                                          prefix=24,
-                                          resolveGateway=True)
+                                          resolveGateway=False)
 
     protocolObj.startAllProtocols()
     protocolObj.verifyProtocolSessionsUp()
@@ -200,7 +200,7 @@ try:
                                                      'name':'Topo1 to Topo2',
                                                      'trafficType':'ipv4',
                                                      'biDirectional':True,
-                                                     'srcDestMesh':'one-to-one',
+                                                     'srcDestMesh':'many-to-many',
                                                      'routeMesh':'oneToOne',
                                                      'allowSelfDestined':False,
                                                      'trackBy': ['flowGroup0', 'vlanVlanId0']},
