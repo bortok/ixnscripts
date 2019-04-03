@@ -166,28 +166,28 @@ try:
                                                           'direction': 'increment',
                                                           'step':0})
     ipv4Obj1 = protocolObj.configIpv4Ngpf(ethernetObj1,
-                                          ipv4Address={'start': '1.1.1.1',
+                                          ipv4Address={'start': '100.1.0.2',
                                                        'direction': 'increment',
                                                        'step': '0.0.1.0'},
-                                          prefix=8,
+                                          prefix=24,
                                           ipv4AddressPortStep='disabled',
-                                          gateway={'start': '1.0.0.1',
+                                          gateway={'start': '100.1.0.1',
                                                    'direction': 'increment',
-                                                   'step': '0.0.0.0'},
+                                                   'step': '0.0.1.0'},
                                           gatewayPortStep='disabled',
-                                          resolveGateway=False)
+                                          resolveGateway=True)
 
     ipv4Obj2 = protocolObj.configIpv4Ngpf(ethernetObj2,
-                                          ipv4Address={'start': '1.1.2.1',
+                                          ipv4Address={'start': '100.1.0.1',
                                                        'direction': 'increment',
                                                        'step': '0.0.1.0'},
                                           prefix=8,
                                           ipv4AddressPortStep='disabled',
-                                          gateway={'start': '1.0.0.1',
+                                          gateway={'start': '100.1.0.2',
                                                    'direction': 'increment',
-                                                   'step': '0.0.0.0'},
+                                                   'step': '0.0.1.0'},
                                           gatewayPortStep='disabled',
-                                          resolveGateway=False)
+                                          resolveGateway=True)
 
     protocolObj.startAllProtocols()
     protocolObj.verifyProtocolSessionsUp()
@@ -199,9 +199,9 @@ try:
                                                  trafficItem = {
                                                      'name':'Topo1 to Topo2',
                                                      'trafficType':'ipv4',
-                                                     'biDirectional':True,
-                                                     'srcDestMesh':'many-to-many',
-                                                     'routeMesh':'oneToOne',
+                                                     'biDirectional':False,
+                                                     'srcDestMesh':'one-to-one',
+                                                     'routeMesh':'FullyMeshed',
                                                      'allowSelfDestined':False,
                                                      'trackBy': ['flowGroup0', 'vlanVlanId0']},
                                                  endpoints = [{'name':'Flow-Group-1',
