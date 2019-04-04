@@ -19,6 +19,7 @@ apiServerTcpPort = '443'    # Use 443 for linux or 11009 for windows API server
 apiServerUsername = 'admin' # Only used for linux API server
 apiServerPassword = 'admin' # Only used for linux API server
 osPlatform = 'linux'        # linux or windows
+#osPlatform = 'windows'        # linux or windows
 licenseServerIp = apiServerIp
 licenseModel = 'perpetual'
 
@@ -197,25 +198,29 @@ try:
     trafficObj = Traffic(mainObj)
     trafficStatus = trafficObj.configTrafficItem(mode='create',
                                                  trafficItem = {
-                                                     'name':'Topo1 to Topo2',
+                                                     'name':'Two-Flow',
                                                      'trafficType':'ipv4',
                                                      'biDirectional':False,
                                                      'srcDestMesh':'one-to-one',
-                                                     'routeMesh':'FullyMeshed',
+                                                     'routeMesh':'fullMesh',
                                                      'allowSelfDestined':False,
                                                      'trackBy': ['flowGroup0', 'vlanVlanId0']},
                                                  endpoints = [{'name':'Flow-Group-1',
                                                                 'sources': [topologyObj1],
-                                                                'destinations': [topologyObj2]
-                                                           }],
+                                                                'destinations': [topologyObj2]},
+                                                                {'name':'Flow-Group-2',
+                                                                'sources': [topologyObj2],
+                                                                'destinations': [topologyObj1]}    
+                                                            ],
                                                  configElements = [{'transmissionType': 'continuous',
                                                                     'frameRate': frame_rate_percent,
                                                                     'frameRateType': 'percentLineRate',
-                                                                    'frameSize': frame_size}])
-    
-    trafficItemObj   = trafficStatus[0]
-    endpointObj      = trafficStatus[1][0]
-    configElementObj = trafficStatus[2][0]
+                                                                    'frameSize': frame_size},
+                                                                   {'transmissionType': 'continuous',
+                                                                    'frameRate': frame_rate_percent,
+                                                                    'frameRateType': 'percentLineRate',
+                                                                    'frameSize': frame_size}
+                                                                ])
     
     # Enable tracking of packet loss duration
     trafficObj.enablePacketLossDuration()
