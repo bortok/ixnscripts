@@ -1,0 +1,7 @@
+
+*.log
+*.pyc
+*.csv
+PacketLossDuration_csv_cisco.py
+PacketLossDuration_csv_ixia.py
+PacketLossDuration_csv_N1.py
