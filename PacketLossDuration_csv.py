@@ -37,14 +37,27 @@ import csv
 import requests
 requests.packages.urllib3.disable_warnings()
 
-from libixnscripts import *
-
 sys.path.insert(0, (os.path.dirname(os.path.abspath(__file__).replace('ixnscripts', 'IxNetwork/RestApi/Python/Modules'))))
 from IxNetRestApi import *
 from IxNetRestApiPortMgmt import PortMgmt
 from IxNetRestApiTraffic import Traffic
 from IxNetRestApiProtocol import Protocol
 from IxNetRestApiStatistics import Statistics
+
+# Helpers
+def isInt(s):
+    try: 
+        int(s)
+        return True
+    except ValueError:
+        return False
+
+def isFloat(s):
+    try: 
+        float(s)
+        return True
+    except ValueError:
+        return False
 
 def usage():
     print("Usage: %s frame_rate_percent frame_size [api_session_id api_session_key]" % (sys.argv[0]))
