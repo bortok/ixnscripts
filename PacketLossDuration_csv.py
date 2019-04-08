@@ -12,8 +12,7 @@ releasePortsWhenDone = False
 enableDebugTracing = False
 logFile = False
 
-apiServerIp = '10.36.237.142'
-#apiServerIp = '10.211.55.3'
+apiServerIp = '10.x.x.x'
 apiServerTcpPort = '443'    # Use 443 for linux or 11009 for windows API server
 #apiServerTcpPort = '11009'    # Use 443 for linux or 11009 for windows API server
 apiServerUsername = 'admin' # Only used for linux API server
@@ -23,7 +22,7 @@ osPlatform = 'linux'        # linux or windows
 licenseServerIp = apiServerIp
 licenseModel = 'perpetual'
 
-ixChassisIp = '10.36.237.142'
+ixChassisIp = '10.y.y.y'
 # [chassisIp, cardNumber, slotNumber]
 portList = [[ixChassisIp, '1', '1'], [ixChassisIp, '1', '2']]
 portMediaType = 'fiber' # copper, fiber or SGMII
