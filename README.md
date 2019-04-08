@@ -50,13 +50,13 @@ Put proper IP information for your IxNetwork environment in the following sectio
 
 ### Packet loss duration logging tool
 
-Initialize python environment (you might need to adapt this to your setup, depending on the directory tree structure)
+PacketLossDuration_csv.py allows you to log packet loss duration measured during failover operations with multiple iterrations. Use arguments to specify desired traffic rate and frame size. For Linux API server a session cal be re-used. To keep the session open after the script is over, supply `keep` as a `api_session_id` parameter first time you ran it.
 
     python3 PacketLossDuration_csv.py frame_rate_percent frame_size [api_session_id api_session_key]
     
-For example, generate 5% of line rate with 512 bytes frames
+For example, generate 5% of line rate with 512 bytes frames and keep the API session open:
 
-    python3 PacketLossDuration_csv.py 5 512
+    python3 PacketLossDuration_csv.py 5 512 keep
 
 # Copyright notice
 
