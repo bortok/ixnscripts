@@ -9,8 +9,9 @@
 #---------- Preference Settings --------------
 forceTakePortOwnership = True
 releasePortsWhenDone = False
-debugMode = False
-logFile = False
+# Console output verbosity: 'none'|'request'|'request response'
+debugMode = 'none'
+logFile = 'restpy.log'
 
 #apiServerIp = '10.36.237.142'
 apiServerIp = '10.211.55.3'
@@ -33,8 +34,6 @@ licenseServerIp = ['10.36.237.142']
 licenseMode = 'perpetual'
 # tier1, tier2, tier3, tier3-10g
 licenseTier = 'tier3'
-
-configFile = 'bgp_ngpf_8.30.ixncfg'
 
 #---------- Preference Settings End --------------
 
@@ -67,34 +66,32 @@ def isFloat(s):
         return False
 
 def usage():
-    print("Usage: %s frame_rate_percent frame_size [api_session_id api_session_key]" % (sys.argv[0]))
+    print("Usage: %s ixn_config_file [api_session_id api_session_key]" % (sys.argv[0]))
 
 # Parse arguments
-if len(sys.argv) < 3:
+if len(sys.argv) < 2:
     usage()
     sys.exit()
-    
-# Assemble an API URL base
-frame_rate_percent = float(sys.argv[1])
-frame_size  = int(sys.argv[2])
 
+configFile = sys.argv[1]
+    
 if osPlatform == 'windows':
     deleteSessionAfterTest = False
 else: 
     deleteSessionAfterTest = True   # see below for 'keep' parameter to override this
     
-if len(sys.argv) > 3:
-    if sys.argv[3] == 'keep':   # the request is to create a new session and to keep it after the test is finished
+if len(sys.argv) > 2:
+    if sys.argv[2] == 'keep':   # the request is to create a new session and to keep it after the test is finished
         api_session_id = None # will create a new session
         api_session_key = None
     else:
-        api_session_id = sys.argv[3]
-        if len(sys.argv) != 5:
+        api_session_id = sys.argv[2]
+        if len(sys.argv) != 4:
             print("Error: api_session_key is required if api_sesson_id is specified")
             usage()
             sys.exit()
         else:
-            api_session_key = sys.argv[4]
+            api_session_key = sys.argv[3]
     deleteSessionAfterTest = False
 else:
     api_session_id = None # will create a new session
@@ -118,10 +115,9 @@ def getPackLossDuration():
 trafficItemName = 'Topo-BGP'
 
 try:
-    testPlatform = TestPlatform(apiServerIp, rest_port=apiServerPort, platform=osPlatform, log_file_name='restpy.log')
+    testPlatform = TestPlatform(apiServerIp, rest_port=apiServerPort, platform=osPlatform, log_file_name=logFile)
 
-    # Console output verbosity: None|request|'request response'
-    testPlatform.Trace = 'request_response'
+    testPlatform.Trace = debugMode
 
     if osPlatform == 'linux':
         testPlatform.Authenticate(apiServerUsername, apiServerPassword)
@@ -145,12 +141,12 @@ try:
 
     ixNetwork.NewConfig()
 
-    ixNetwork.info('Loading config file: {0}'.format(configFile))
-    ixNetwork.LoadConfig(Files(configFile, local_file=True))
-
     ixNetwork.Globals.Licensing.LicensingServers = licenseServerIp
     ixNetwork.Globals.Licensing.Mode = licenseMode
     ixNetwork.Globals.Licensing.Tier = licenseTier
+
+    ixNetwork.info('Loading config file: {0}'.format(configFile))
+    ixNetwork.LoadConfig(Files(configFile, local_file=True))
 
     # Assign ports
     testPorts = []
@@ -168,12 +164,12 @@ try:
     protocolsSummary.CheckCondition('Sessions Down', StatViewAssistant.EQUAL, 0)
     ixNetwork.info(protocolsSummary)
 
-    # Get the Traffic Item name for getting Traffic Item statistics.
-    trafficItem = ixNetwork.Traffic.TrafficItem.find()[0]
-
     # Enable tracking of packet loss duration
     ixNetwork.Traffic.Statistics.PacketLossDuration.Enabled = True
-    trafficItem.Generate()
+    # Get the Traffic Item name for getting Traffic Item statistics.
+    for trafficItem in ixNetwork.Traffic.TrafficItem.find():
+        trafficItem.Generate()
+        
     ixNetwork.Traffic.Apply()
     ixNetwork.Traffic.Start()
 
@@ -202,7 +198,7 @@ try:
     with open(csv_filename, 'w', newline='') as csvfile:
         testwriter = csv.writer(csvfile, delimiter=',',
                                 quotechar='"', quoting=csv.QUOTE_NONNUMERIC)
-        testwriter.writerow(['Test #', 'Test scope', 'Iterration #', 'FAILURE Loss Duration, ms', 'RECOVERY Loss Duration, ms'])
+        testwriter.writerow(['Test #', 'Test scope', 'Iterration #', 'FAILURE Loss Duration (ms)', 'RECOVERY Loss Duration (ms)'])
 
         while True:
             test_number = test_number + 1
