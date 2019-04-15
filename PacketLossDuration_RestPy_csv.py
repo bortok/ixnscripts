@@ -33,6 +33,7 @@ licenseTier = 'tier3'
 #---------- Preference Settings End --------------
 
 import sys, os, traceback
+import subprocess
 import json
 import time, datetime
 import csv
@@ -237,7 +238,8 @@ try:
         # For Linux and Windows Connection Manager only
         session.remove()
 
-    print('Exiting...')
+    print('Exiting, here are the results:')
+    subprocess.call(["column", "-ts,", csv_filename])
 
 except Exception as errMsg:
     print('\n%s' % traceback.format_exc())
