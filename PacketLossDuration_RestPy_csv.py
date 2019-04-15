@@ -12,14 +12,14 @@ releasePortsWhenDone = False
 debugMode = False
 logFile = False
 
-apiServerIp = '10.36.237.142'
-#apiServerIp = '10.211.55.3'
-apiServerPort = '443'    # Use 443 for linux or 11009 for windows API server
-#apiServerPort = '11009'    # Use 443 for linux or 11009 for windows API server
+#apiServerIp = '10.36.237.142'
+apiServerIp = '10.211.55.3'
+#apiServerPort = '443'    # Use 443 for linux or 11009 for windows API server
+apiServerPort = '11009'    # Use 443 for linux or 11009 for windows API server
 apiServerUsername = 'admin' # Only used for linux API server
 apiServerPassword = 'admin' # Only used for linux API server
-osPlatform = 'linux'        # linux or windows
-#osPlatform = 'windows'        # linux or windows
+#osPlatform = 'linux'        # linux or windows
+osPlatform = 'windows'        # linux or windows
 
 ixChassisIp = '10.36.237.142'
 # [chassisIp, cardNumber, slotNumber]
@@ -123,10 +123,26 @@ try:
     # Console output verbosity: None|request|'request response'
     testPlatform.Trace = 'request_response'
 
-    testPlatform.Authenticate(apiServerUsername, apiServerPassword)
-    session = testPlatform.Sessions.add()
+    if osPlatform == 'linux':
+        testPlatform.Authenticate(apiServerUsername, apiServerPassword)
+        if api_session_id == None:
+            session = testPlatform.Sessions.add()
+        else:
+            session = testPlatform.Sessions.find(Id=api_session_id)
+
+    if osPlatform == 'windows':
+        # Windows support only one session. Id is always equal 1.
+        session = testPlatform.Sessions.find(Id=1)
+        
+    print("API Session ID: %d" % (session.Id))
 
     ixNetwork = session.Ixnetwork
+    #if api_session_key != None:
+    #    ixNetwork.ApiKey = api_session_key
+    #else:
+    #    api_session_key = ixNetwork.ApiKey
+    #    print("API Session KEY: %s" % (api_session_key))
+
     ixNetwork.NewConfig()
 
     ixNetwork.info('Loading config file: {0}'.format(configFile))
@@ -222,17 +238,11 @@ try:
     if releasePortsWhenDone == True:
         ixNetwork.ReleasePorts(portList)
 
-    #if osPlatform == 'linux':
-    #    mainObj.linuxServerStopAndDeleteSession()
-
-    #if osPlatform == 'windowsConnectionMgr':
-    #    mainObj.deleteSession()
-
-    print('Exiting...')
-
-    if debugMode:
+    if osPlatform == 'linux':
         # For Linux and Windows Connection Manager only
         session.remove()
+
+    print('Exiting...')
 
 except Exception as errMsg:
     print('\n%s' % traceback.format_exc())
