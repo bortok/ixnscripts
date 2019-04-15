@@ -89,7 +89,7 @@ else:
  
 def getPackLossDuration():
     stats = trafficItemStatistics
-    print("DEBUG STATS JSON\n%s" % (stats))
+    #print("DEBUG STATS JSON\n%s" % (stats))
     value_str = stats.Rows[0]['Packet Loss Duration (ms)']
     print("Packet loss duration: %s ms" % (value_str))
     if isFloat(value_str):
@@ -97,10 +97,6 @@ def getPackLossDuration():
     else:
         value = 0.0
     return value
-
-
-# The traffic item name to get stats from for this sample script
-trafficItemName = 'Topo-BGP'
 
 try:
     testPlatform = TestPlatform(apiServerIp, rest_port=apiServerPort, platform=osPlatform, log_file_name=logFile)
@@ -167,12 +163,12 @@ try:
     #    flowStatistics.AddRowFilter('Tx Frames', StatViewAssistant.LESS_THAN, 50000)
 
     trafficItemStatistics = StatViewAssistant(ixNetwork, 'Traffic Item Statistics')
-    ixNetwork.info('{}\n'.format(trafficItemStatistics))
+    #ixNetwork.info('{}\n'.format(trafficItemStatistics))
     
     # Get the statistic values
-    txFrames = trafficItemStatistics.Rows[0]['Tx Frames']
-    rxFrames = trafficItemStatistics.Rows[0]['Rx Frames']
-    ixNetwork.info('\nTraffic Item Stats:\n\tTxFrames: {}  RxFrames: {}\n'.format(txFrames, rxFrames))
+    #txFrames = trafficItemStatistics.Rows[0]['Tx Frames']
+    #rxFrames = trafficItemStatistics.Rows[0]['Rx Frames']
+    #ixNetwork.info('\nTraffic Item Stats:\n\tTxFrames: {}  RxFrames: {}\n'.format(txFrames, rxFrames))
 
     # Initialize counters
     test_number = 0
