@@ -1,36 +1,22 @@
-#Python Test to get Packet Loss Duration Statistics
-# CLI arguments parsing
+#!/usr/bin/env python
 
+###############################################################################
+#
+# IxNetwork Automation Script get Packet Loss Duration Statistics
+#
+# File: PacketLossDuration_RestPy_csv.py
+# Author: Alex Bortok (https://github.com/bortok)
+#
+# Description: IxNetwork Automation Script get Packet Loss Duration Statistics
+#
+# COPYRIGHT 2019 Keysight Technologies.
+#
 # USAGE
-# 1. Update "Preference Settings" section below
+# 1. Update "ixn_preferences.py" file
 # 2. Launch with desired traffic generation parameters
-#    python <script>.py <frame rate percentage of line rate> <frame size> [api_session_id api_session_key]
-
-#---------- Preference Settings --------------
-forceTakePortOwnership = True
-releasePortsWhenDone = False
-# Console output verbosity: 'none'|'request'|'request response'
-debugMode = 'none'
-logFile = 'restpy.log'
-
-
-apiServerUsername = 'admin' # Only used for linux API server
-apiServerPassword = 'admin' # Only used for linux API server
-
-ixChassisIp = '10.36.237.142'
-# [chassisIp, cardNumber, slotNumber]
-portList = [[ixChassisIp, '1', '1'], [ixChassisIp, '1', '2']]
-portMediaType = 'fiber' # copper, fiber or SGMII
-
-
-# The IP address for your Ixia license server(s) in a list.
-licenseServerIp = ['10.36.237.142']
-# subscription, perpetual or mixed
-licenseMode = 'perpetual'
-# tier1, tier2, tier3, tier3-10g
-licenseTier = 'tier3'
-
-#---------- Preference Settings End --------------
+#    python <script>.py <API server IP address> <API_server_platform: linux|windows> [api_session_id api_session_key]
+#
+###############################################################################
 
 import sys, os, traceback
 import subprocess
@@ -40,6 +26,8 @@ import csv
 
 import requests
 requests.packages.urllib3.disable_warnings()
+
+from ixn_preferences import *
 
 # Import the RestPy module
 from ixnetwork_restpy.testplatform.testplatform import TestPlatform
