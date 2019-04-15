@@ -13,14 +13,9 @@ releasePortsWhenDone = False
 debugMode = 'none'
 logFile = 'restpy.log'
 
-#apiServerIp = '10.36.237.142'
-apiServerIp = '10.211.55.3'
-#apiServerPort = '443'    # Use 443 for linux or 11009 for windows API server
-apiServerPort = '11009'    # Use 443 for linux or 11009 for windows API server
+
 apiServerUsername = 'admin' # Only used for linux API server
 apiServerPassword = 'admin' # Only used for linux API server
-#osPlatform = 'linux'        # linux or windows
-osPlatform = 'windows'        # linux or windows
 
 ixChassisIp = '10.36.237.142'
 # [chassisIp, cardNumber, slotNumber]
@@ -66,32 +61,36 @@ def isFloat(s):
         return False
 
 def usage():
-    print("Usage: %s ixn_config_file [api_session_id api_session_key]" % (sys.argv[0]))
+    print("Usage: %s api_server_ip linux|windows ixn_config_file [api_session_id api_session_key]" % (sys.argv[0]))
 
 # Parse arguments
-if len(sys.argv) < 2:
+if len(sys.argv) < 4:
     usage()
     sys.exit()
 
-configFile = sys.argv[1]
-    
+apiServerIp = sys.argv[1]
+osPlatform  = sys.argv[2]
+configFile  = sys.argv[3]
+
 if osPlatform == 'windows':
+    apiServerPort = '11009'
     deleteSessionAfterTest = False
-else: 
+else:
+    apiServerPort = '443'
     deleteSessionAfterTest = True   # see below for 'keep' parameter to override this
-    
-if len(sys.argv) > 2:
-    if sys.argv[2] == 'keep':   # the request is to create a new session and to keep it after the test is finished
+
+if len(sys.argv) > 4:
+    if sys.argv[4] == 'keep':   # the request is to create a new session and to keep it after the test is finished
         api_session_id = None # will create a new session
         api_session_key = None
     else:
-        api_session_id = sys.argv[2]
-        if len(sys.argv) != 4:
+        api_session_id = sys.argv[4]
+        if len(sys.argv) != 6:
             print("Error: api_session_key is required if api_sesson_id is specified")
             usage()
             sys.exit()
         else:
-            api_session_key = sys.argv[3]
+            api_session_key = sys.argv[5]
     deleteSessionAfterTest = False
 else:
     api_session_id = None # will create a new session
