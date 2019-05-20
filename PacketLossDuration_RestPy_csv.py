@@ -109,6 +109,12 @@ try:
             session = testPlatform.Sessions.add()
         else:
             session = testPlatform.Sessions.find(Id=api_session_id)
+        #if api_session_key != None:
+        #    ixNetwork.ApiKey = api_session_key
+        #else:
+            #api_session_key = ixNetwork.ApiKey
+            #print("API Session KEY: %s" % (api_session_key))
+
 
     if osPlatform == 'windows':
         # Windows support only one session. Id is always equal 1.
@@ -117,12 +123,6 @@ try:
     print("API Session ID: %d" % (session.Id))
 
     ixNetwork = session.Ixnetwork
-    #if api_session_key != None:
-    #    ixNetwork.ApiKey = api_session_key
-    #else:
-    #    api_session_key = ixNetwork.ApiKey
-    #    print("API Session KEY: %s" % (api_session_key))
-
     ixNetwork.NewConfig()
 
     ixNetwork.Globals.Licensing.LicensingServers = licenseServerIp
@@ -218,7 +218,7 @@ try:
     if releasePortsWhenDone == True:
         ixNetwork.ReleasePorts(portList)
 
-    if osPlatform == 'linux':
+    if osPlatform == 'linux' and len(sys.argv) < 5:
         # For Linux and Windows Connection Manager only
         session.remove()
 
