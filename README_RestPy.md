@@ -2,14 +2,34 @@
 ## Overview
 These scripts are based on RestPy framework, which is the most up-to-date for Ixia IxNetwork.
 
-## Installation
+## Required packages
 Prerequisites:
 
 * Python 3
 * PIP
 * virtualenv - optional, used in the examples here
 
-### Linux or OS X
+Verify installed Python version, should be 3.+. Open a command prompt and run the following command:
+   
+    python -V
+
+Use the steps below to install required components on Windows or Mac OS X. Use appropriate Linux package manager to install Python and PIP.
+
+If you don't have Python 3 installed, download and install it from [https://www.python.org/downloads/](https://www.python.org/downloads/)
+
+Download [`get-pip.py`](https://bootstrap.pypa.io/get-pip.py) to a folder on your computer. Open a command prompt and navigate to the folder containing `get-pip.py`. Run the following command:
+
+    python get-pip.py
+
+Verify installed PIP version.
+
+    pip -V
+
+Install virtualenv:
+
+    pip install virtualenv
+
+## Installation on Linux
 
 Create virtual environment called `ixnetwork` in a directory of your choice:
 
@@ -25,41 +45,63 @@ Install pre-requisite packages:
 
     pip install -r ixnscripts/requirements.txt
 
-### Windows
-Verify installed Python version, should be 3.+. Open a command prompt and run the following command:
-   
-    python -V
+### Installation on Windows
 
-If you don't have Python 3 installed, download and install it from [https://www.python.org/downloads/](https://www.python.org/downloads/)
+Create virtual environment called `ixnetwork` in a directory of your choice:
 
-Download [`get-pip.py`](https://bootstrap.pypa.io/get-pip.py) to a folder on your computer. Open a command prompt and navigate to the folder containing `get-pip.py`. Run the following command:
+    set PYENV=ixnetwork
+    virtualenv -p python %PYENV%
+    cd %PYENV%
+    Scripts\activate.bat
 
-    python get-pip.py
-
-Verify installed PIP version, should be 18+
-
-    pip -V
-
-Download and extract a ZIP archive with [`ixnscripts`](https://github.com/bortok/ixnscripts/archive/master.zip) repository. Open a command prompt and navigate to the folder `ixnscripts-master`.
+Download a [ZIP archive](https://github.com/bortok/ixnscripts/archive/master.zip) with `ixnscripts` repository into `ixnetwork` folder and extract it.
 
 Install pre-requisite packages:
 
-    pip install -r requirements.txt
+    move ixnscripts-master ixnscripts
+    pip install -r ixnscripts\requirements.txt
 
 
 ## Configuration
+Open `ixn_preferences.py` file in a text editor. Update test chassis information for your IxNetwork environment:
+
+    #---------- Preference Settings --------------
+    
+    forceTakePortOwnership = True
+    releasePortsWhenDone = False
+    # Console output verbosity: 'none'|'request'|'request_response'
+    debugMode = 'none'
+    logFile = 'restpy.log'
+    
+    apiServerUsername = 'admin' # Only used for linux API server
+    apiServerPassword = 'admin' # Only used for linux API server
+    
+    ixChassisIp = '10.10.10.10'
+    # [chassisIp, cardNumber, slotNumber]
+    portList = [[ixChassisIp, '1', '1'], [ixChassisIp, '1', '2']]
+    portMediaType = 'fiber' # copper, fiber or SGMII
+    
+    # The IP address for your Ixia license server(s) in a list.
+    licenseServerIp = ['10.10.10.10']
+    # subscription, perpetual or mixed
+    licenseMode = 'perpetual'
+    # tier1, tier2, tier3, tier3-10g
+    licenseTier = 'tier3'
+    
+    #---------- Preference Settings End --------------
 
 ## Usage
 
 ### Packet loss duration logging tool
 
-PacketLossDuration_csv.py allows you to log packet loss duration measured during failover operations with multiple iterrations. Use arguments to specify desired traffic rate and frame size. For Linux API server a session can be re-used between multiple script runs to speed up testing. To keep the session open after the script is over, supply `keep` as a `api_session_id` parameter first time you ran it.
+`PacketLossDuration_RestPy.py` allows you to log packet loss duration measured during failover operations with multiple iterrations. Use arguments to specify IxNetwork API server to connect to and a platform it is running on (linux or windows), plus IxNetwork configuration file to generate traffic.
 
-    python3 PacketLossDuration_csv.py frame_rate_percent frame_size [api_session_id api_session_key]
-    
-For example, generate 5% of line rate with 512 bytes frames and keep the API session open:
+    cd ixnscripts
+    python PacketLossDuration_RestPy.py <api_server_ip> <linux|windows> <ixn_config_file>
 
-    python3 PacketLossDuration_csv.py 5 512 keep
+For example, to connect to an API server running on Linux-based IxNetwork chassis with an IP address 10.10.10.10 using `ixnscripts_example.ixncfg` traffic configuration:
+
+    python PacketLossDuration_RestPy.py 10.10.10.10 linux ixnscripts_example.ixncfg
 
 # Copyright notice
 
