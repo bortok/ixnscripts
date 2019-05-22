@@ -223,7 +223,9 @@ try:
         session.remove()
 
     print('Exiting, here are the results:')
-    subprocess.call(["column", "-ts,", csv_filename])
+    with open(csv_filename, 'r') as fin:
+        print(fin.read(), end="")
+#    subprocess.call(["column", "-ts,", csv_filename])
 
 except Exception as errMsg:
     print('\n%s' % traceback.format_exc())

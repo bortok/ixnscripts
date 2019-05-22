@@ -99,7 +99,7 @@ Open `ixn_preferences.py` file in a text editor. Update test chassis information
     cd ixnscripts
     python PacketLossDuration_RestPy.py <api_server_ip> <linux|windows> <ixn_config_file>
 
-For example, to connect to an API server running on Linux-based IxNetwork chassis with an IP address 10.10.10.10 using `ixnscripts_example.ixncfg` traffic configuration:
+For example, to connect to an API server running on Linux-based IxNetwork chassis with an IP address `10.10.10.10` using `ixnscripts_example.ixncfg` traffic configuration:
 
     python PacketLossDuration_RestPy.py 10.10.10.10 linux ixnscripts_example.ixncfg
 

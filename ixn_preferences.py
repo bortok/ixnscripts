@@ -11,7 +11,7 @@ apiServerPassword = 'admin' # Only used for linux API server
 
 ixChassisIp = '10.36.237.196'
 # [chassisIp, cardNumber, slotNumber]
-portList = [[ixChassisIp, '5', '9'], [ixChassisIp, '5', '10']]
+portList = [[ixChassisIp, '5', '11'], [ixChassisIp, '5', '12']]
 portMediaType = 'fiber' # copper, fiber or SGMII
 
 
