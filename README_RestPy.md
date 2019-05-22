@@ -101,7 +101,7 @@ Open `ixn_preferences.py` file in a text editor. Update test chassis information
 
 For example, to connect to an API server running on Linux-based IxNetwork chassis with an IP address `10.10.10.10` using `ixnscripts_example.ixncfg` traffic configuration:
 
-    python PacketLossDuration_RestPy.py 10.10.10.10 linux ixnscripts_example.ixncfg
+    python PacketLossDuration_RestPy.py 10.10.10.10 linux 2Gbps_bidir.ixncfg
 
 # Copyright notice
 
