@@ -182,13 +182,13 @@ try:
     with open(csv_filename, 'w', newline='') as csvfile:
         testwriter = csv.writer(csvfile, delimiter=',',
                                 quotechar='"', quoting=csv.QUOTE_NONNUMERIC)
-        testwriter.writerow(['Test #', 'Test scope', 'Iterration #', 'FAILURE Loss Duration (ms)', 'RECOVERY Loss Duration (ms)'])
+        testwriter.writerow(['Test #', 'Test scope', 'Iteration #', 'FAILURE Loss Duration (ms)', 'RECOVERY Loss Duration (ms)'])
 
         while True:
             test_number = test_number + 1
             test_iterration = 0
             test_scope = input("Enter description of your test: ")
-            test_iterrations_str = input("How many iterrations: ")
+            test_iterrations_str = input("How many iterations: ")
             while True:
                 if isInt(test_iterrations_str):
                     test_iterrations = int(test_iterrations_str)
